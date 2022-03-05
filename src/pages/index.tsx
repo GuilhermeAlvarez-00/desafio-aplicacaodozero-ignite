@@ -1,6 +1,8 @@
 import { GetStaticProps } from 'next';
-import Header from '../components/Header';
+import Link from 'next/link';
+import { FiCalendar, FiUser } from 'react-icons/fi'
 
+import Header from '../components/Header';
 import { getPrismicClient } from '../services/prismic';
 
 import commonStyles from '../styles/common.module.scss';
@@ -29,6 +31,26 @@ export default function Home() {
   return (
     <>
       <Header />
+      <main className={`${commonStyles.container}`}>
+        <Link href="#">
+          <a className={styles.postWrapper}>
+            <h2>Como utilizar hooks</h2>
+            <p>Pensando em sincronização em vez de ciclos de vida</p>
+
+            <div className={commonStyles.details}>
+              <span>
+                <FiCalendar />
+                15 mar 2021
+              </span>
+
+              <span>
+                <FiUser />
+                Joseph Oliveira
+              </span>
+            </div>
+          </a>
+        </Link>
+      </main>
     </>
   )
 }

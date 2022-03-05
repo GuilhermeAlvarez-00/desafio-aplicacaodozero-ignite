@@ -3,3 +3,16 @@
   margin: 0 auto;
   padding: 0 1rem;
 }
+
+.details {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+
+  span {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--gray-300);
+  }
+}
