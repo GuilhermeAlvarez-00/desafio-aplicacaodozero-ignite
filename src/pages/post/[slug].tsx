@@ -1,7 +1,7 @@
 import { format } from 'date-fns'
 import ptBR from 'date-fns/locale/pt-BR'
 import { GetStaticPaths, GetStaticProps } from 'next'
-import { FiCalendar, FiUser } from 'react-icons/fi'
+import { FiCalendar, FiUser, FiClock } from 'react-icons/fi'
 import { RichText } from 'prismic-dom'
 import Prismic from '@prismicio/client'
 
@@ -10,6 +10,7 @@ import { getPrismicClient } from '../../services/prismic'
 
 import commonStyles from '../../styles/common.module.scss'
 import styles from './post.module.scss'
+import { useRouter } from 'next/router'
 
 interface Post {
   first_publication_date: string | null
@@ -40,6 +41,23 @@ export default function Post({ post }: PostProps) {
     return formattedDate
   }
 
+  const router = useRouter()
+
+  if (router.isFallback) {
+    return <h2>Carregando...</h2>
+  }
+
+  const totalWordsInPost = post.data.content.reduce((acc, cur) => {
+    acc += cur.heading.split(' ').length
+    const body = cur.body.map(item => item.text.split(' ').length)
+    acc += body.reduce((acc, cur) => acc + cur)
+    return acc
+  }, 0)
+
+  const readingTime = Math.ceil(totalWordsInPost / 200)
+
+  console.log('reading time', readingTime)
+
   return (
     <>
       <Header />
@@ -56,6 +74,11 @@ export default function Post({ post }: PostProps) {
           <span>
             <FiUser />
             {post.data.author}
+          </span>
+
+          <span>
+            <FiClock />
+            {`${readingTime} min`}
           </span>
         </div>
 
@@ -98,10 +121,14 @@ export const getStaticProps: GetStaticProps = async context => {
   const prismic = getPrismicClient()
   const response = await prismic.getByUID('posts', String(slug), {})
 
+  console.log(JSON.stringify(response.data.content, null, 2))
+
   const post = {
+    uid: response.uid,
     first_publication_date: response.first_publication_date,
     data: {
       title: response.data.title,
+      subtitle: response.data.subtitle,
       banner: {
         url: response.data.banner.url,
       },
