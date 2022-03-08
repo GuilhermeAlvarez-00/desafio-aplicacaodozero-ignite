@@ -139,8 +139,8 @@ export default function Post({
             {pagination.prevPost && (
               <Link href={`/post/${pagination.prevPost.slug}`}>
                 <a className={styles.prevPost}>
-                  {pagination.prevPost.title}
-                  <span>Post anterior</span>
+                  <span>{pagination.prevPost.title}</span>
+                  Post anterior
                 </a>
               </Link>
             )}
@@ -148,8 +148,8 @@ export default function Post({
             {pagination.nextPost && (
               <Link href={`/post/${pagination.nextPost.slug}`}>
                 <a className={styles.nextPost}>
-                  {pagination.nextPost.title}
-                  <span>Próximo post</span>
+                  <span>{pagination.nextPost.title}</span>
+                  Próximo post
                 </a>
               </Link>
             )}
