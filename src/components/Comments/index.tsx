@@ -1,22 +1,31 @@
-import React, { Component } from 'react'
+import { useComments } from '../../hooks/useComments'
 
-export default class Comments extends Component {
-  componentDidMount() {
-    let script = document.createElement('script')
-    let anchor = document.getElementById('inject-comments-for-uterances')
-    script.setAttribute('src', 'https://utteranc.es/client.js')
-    script.setAttribute('crossorigin', 'anonymous')
-    script.setAttribute('async', 'true')
-    script.setAttribute(
-      'repo',
-      'GuilhermeAlvarez-00/desafio-aplicacaodozero-ignite'
-    )
-    script.setAttribute('issue-term', 'pathname')
-    script.setAttribute('theme', 'github-dark')
-    anchor.appendChild(script)
+interface CommentsProps {
+  post: {
+    first_publication_date: string | null
+    data: {
+      title: string
+      banner: {
+        url: string
+      }
+      author: string
+      content: {
+        heading: string
+        body: {
+          text: string
+        }[]
+      }[]
+    }
   }
+}
 
-  render() {
-    return <div id="inject-comments-for-uterances"></div>
+export default function Comments({ post }: CommentsProps) {
+  const commentNodeId = 'inject-comments-for-uterances'
+  const comments = {
+    commentNodeId,
+    post,
   }
+  useComments(comments)
+
+  return <div id={comments.commentNodeId}></div>
 }

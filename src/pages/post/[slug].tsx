@@ -15,6 +15,7 @@ import { useRouter } from 'next/router'
 import Comments from '../../components/Comments'
 import { PreviewButton } from '../../components/PreviewButton'
 import Link from 'next/link'
+import { useEffect } from 'react'
 
 interface Post {
   first_publication_date: string | null
@@ -154,7 +155,7 @@ export default function Post({
             )}
           </div>
         )}
-        <Comments />
+        <Comments post={post} />
         {preview && <PreviewButton />}
       </main>
     </>
@@ -228,8 +229,6 @@ export const getStaticProps: GetStaticProps = async ({
 
       return pagination
     }, {}) ?? null
-
-  console.log(pagination)
 
   const post = {
     uid: response.uid,
