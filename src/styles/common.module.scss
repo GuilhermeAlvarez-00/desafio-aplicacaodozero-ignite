@@ -5,6 +5,8 @@
 }
 
 .details {
+  width: 100%;
+
   span {
     display: inline-flex;
     align-items: center;
@@ -21,5 +23,11 @@
     margin-top: 1rem;
     font-style: italic;
     font-size: 0.875rem;
+  }
+
+  @media (max-width: 420px) {
+    span {
+      font-size: 0.875rem;
+    }
   }
 }
