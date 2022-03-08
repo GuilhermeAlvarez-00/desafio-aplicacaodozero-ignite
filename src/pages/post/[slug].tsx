@@ -11,6 +11,7 @@ import { getPrismicClient } from '../../services/prismic'
 import commonStyles from '../../styles/common.module.scss'
 import styles from './post.module.scss'
 import { useRouter } from 'next/router'
+import Comments from '../../components/Comments'
 
 interface Post {
   first_publication_date: string | null
@@ -31,14 +32,26 @@ interface Post {
 
 interface PostProps {
   post: Post
+  lastUpdate: string
 }
 
-export default function Post({ post }: PostProps) {
+export default function Post({ post, lastUpdate }: PostProps) {
+  console.log(lastUpdate)
   function formatDate(date) {
     const formattedDate = format(new Date(date), 'dd MMM uuuu', {
       locale: ptBR,
     })
     return formattedDate
+  }
+
+  function formatlastUpdate(date) {
+    const currentDate = format(new Date(date), 'dd MMM uuuu HH mm', {
+      locale: ptBR,
+    }).split(' ')
+    const dateFormatted = currentDate.slice(0, 3).join(' ')
+    const hourFormatted = currentDate.slice(-2).join(':')
+
+    return `${dateFormatted}, às ${hourFormatted}`
   }
 
   const router = useRouter()
@@ -49,14 +62,15 @@ export default function Post({ post }: PostProps) {
 
   const totalWordsInPost = post.data.content.reduce((acc, cur) => {
     acc += cur.heading.split(' ').length
+
     const body = cur.body.map(item => item.text.split(' ').length)
+
     acc += body.reduce((acc, cur) => acc + cur)
+
     return acc
   }, 0)
 
   const readingTime = Math.ceil(totalWordsInPost / 200)
-
-  console.log('reading time', readingTime)
 
   return (
     <>
@@ -80,6 +94,9 @@ export default function Post({ post }: PostProps) {
             <FiClock />
             {`${readingTime} min`}
           </span>
+          <p
+            className={commonStyles.lastUpdate}
+          >{`* editado em ${formatlastUpdate(lastUpdate)}`}</p>
         </div>
 
         {post.data.content.map(content => (
@@ -92,6 +109,7 @@ export default function Post({ post }: PostProps) {
             />
           </article>
         ))}
+        <Comments />
       </main>
     </>
   )
@@ -121,8 +139,6 @@ export const getStaticProps: GetStaticProps = async context => {
   const prismic = getPrismicClient()
   const response = await prismic.getByUID('posts', String(slug), {})
 
-  console.log(JSON.stringify(response.data.content, null, 2))
-
   const post = {
     uid: response.uid,
     first_publication_date: response.first_publication_date,
@@ -140,9 +156,12 @@ export const getStaticProps: GetStaticProps = async context => {
     },
   }
 
+  const lastUpdate = response.last_publication_date
+
   return {
     props: {
       post,
+      lastUpdate,
     },
     revalidate: 60 * 60, // 1 hour
   }

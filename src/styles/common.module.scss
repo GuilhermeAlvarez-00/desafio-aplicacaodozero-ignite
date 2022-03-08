@@ -5,14 +5,21 @@
 }
 
 .details {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-
   span {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 0.5rem;
     color: var(--gray-300);
+
+    &:not(:first-of-type) {
+      margin-left: 1.5rem;
+    }
+  }
+
+  p {
+    color: var(--gray-300);
+    margin-top: 1rem;
+    font-style: italic;
+    font-size: 0.875rem;
   }
 }
