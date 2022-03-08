@@ -45,4 +45,41 @@
       }
     }
   }
+
+  .divider {
+    height: 1px;
+    margin-top: 4rem;
+    background: #d7d7d7;
+    opacity: 0.1;
+  }
+
+  .paginationLinks {
+    width: 100%;
+    margin-top: 3rem;
+    padding-bottom: 5rem;
+    position: relative;
+
+    .prevPost,
+    .nextPost {
+      width: 18.75rem;
+      position: absolute;
+      top: 0;
+
+      span {
+        display: block;
+        color: var(--pink-500);
+        font-weight: 600;
+      }
+    }
+
+    .prevPost {
+      left: 0;
+      text-align: left;
+    }
+
+    .nextPost {
+      right: 0;
+      text-align: right;
+    }
+  }
 }

@@ -12,6 +12,7 @@ import commonStyles from '../styles/common.module.scss'
 import styles from './home.module.scss'
 import { useState } from 'react'
 import { PreviewButton } from '../components/PreviewButton'
+import Head from 'next/head'
 
 interface Post {
   uid?: string
@@ -70,6 +71,9 @@ export default function Home({ postsPagination, preview }: HomeProps) {
 
   return (
     <>
+      <Head>
+        <title>Space Traveling - Posts</title>
+      </Head>
       <Header />
       <main className={`${commonStyles.container}`}>
         {posts.map(post => (

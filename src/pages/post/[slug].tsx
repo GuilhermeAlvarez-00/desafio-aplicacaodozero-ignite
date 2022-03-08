@@ -1,3 +1,4 @@
+import Head from 'next/head'
 import { format } from 'date-fns'
 import ptBR from 'date-fns/locale/pt-BR'
 import { GetStaticPaths, GetStaticProps } from 'next'
@@ -13,6 +14,7 @@ import styles from './post.module.scss'
 import { useRouter } from 'next/router'
 import Comments from '../../components/Comments'
 import { PreviewButton } from '../../components/PreviewButton'
+import Link from 'next/link'
 
 interface Post {
   first_publication_date: string | null
@@ -35,9 +37,24 @@ interface PostProps {
   post: Post
   lastUpdate: string
   preview: boolean
+  pagination: {
+    prevPost: {
+      title: string
+      slug: string
+    } | null
+    nextPost: {
+      title: string
+      slug: string
+    } | null
+  } | null
 }
 
-export default function Post({ post, lastUpdate, preview }: PostProps) {
+export default function Post({
+  post,
+  lastUpdate,
+  preview,
+  pagination,
+}: PostProps) {
   function formatDate(date) {
     const formattedDate = format(new Date(date), 'dd MMM uuuu', {
       locale: ptBR,
@@ -75,6 +92,9 @@ export default function Post({ post, lastUpdate, preview }: PostProps) {
 
   return (
     <>
+      <Head>
+        <title>Space Traveling - {post.data.title}</title>
+      </Head>
       <Header />
       <img src={post.data.banner.url} alt="imagem" className={styles.banner} />
       <main className={`${commonStyles.container} ${styles.postWrapper}`}>
@@ -110,6 +130,30 @@ export default function Post({ post, lastUpdate, preview }: PostProps) {
             />
           </article>
         ))}
+
+        <div className={styles.divider} />
+
+        {pagination && (
+          <div className={styles.paginationLinks}>
+            {pagination.prevPost && (
+              <Link href={`/post/${pagination.prevPost.slug}`}>
+                <a className={styles.prevPost}>
+                  {pagination.prevPost.title}
+                  <span>Post anterior</span>
+                </a>
+              </Link>
+            )}
+
+            {pagination.nextPost && (
+              <Link href={`/post/${pagination.nextPost.slug}`}>
+                <a className={styles.nextPost}>
+                  {pagination.nextPost.title}
+                  <span>Próximo post</span>
+                </a>
+              </Link>
+            )}
+          </div>
+        )}
         <Comments />
         {preview && <PreviewButton />}
       </main>
@@ -147,6 +191,46 @@ export const getStaticProps: GetStaticProps = async ({
     ref: previewData?.ref ?? null,
   })
 
+  const postsResponse = await prismic.query(
+    Prismic.Predicates.at('document.type', 'posts')
+  )
+
+  const pagination =
+    postsResponse.results.reduce((pagination, currentPost, index, allPosts) => {
+      if (currentPost.id === response.id) {
+        const prev = allPosts[index - 1]
+        const next = allPosts[index + 1]
+
+        let prevPost = null
+        let nextPost = null
+
+        if (prev) {
+          prevPost = {
+            title: prev?.data.title ?? null,
+            slug: prev?.uid ?? null,
+          }
+        }
+
+        if (next) {
+          nextPost = {
+            title: next?.data.title ?? null,
+            slug: next?.uid ?? null,
+          }
+        }
+
+        const paginationLinks = {
+          prevPost,
+          nextPost,
+        }
+
+        pagination = paginationLinks
+      }
+
+      return pagination
+    }, {}) ?? null
+
+  console.log(pagination)
+
   const post = {
     uid: response.uid,
     first_publication_date: response.first_publication_date,
@@ -171,6 +255,7 @@ export const getStaticProps: GetStaticProps = async ({
       post,
       lastUpdate,
       preview,
+      pagination,
     },
     revalidate: 60 * 60, // 1 hour
   }
