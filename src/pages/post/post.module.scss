@@ -33,5 +33,16 @@
     ul li {
       margin-bottom: 2.25rem;
     }
+
+    a {
+      &,
+      strong {
+        color: var(--pink-500);
+      }
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
   }
 }

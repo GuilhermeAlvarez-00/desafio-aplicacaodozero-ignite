@@ -12,6 +12,7 @@ import commonStyles from '../../styles/common.module.scss'
 import styles from './post.module.scss'
 import { useRouter } from 'next/router'
 import Comments from '../../components/Comments'
+import { PreviewButton } from '../../components/PreviewButton'
 
 interface Post {
   first_publication_date: string | null
@@ -33,10 +34,10 @@ interface Post {
 interface PostProps {
   post: Post
   lastUpdate: string
+  preview: boolean
 }
 
-export default function Post({ post, lastUpdate }: PostProps) {
-  console.log(lastUpdate)
+export default function Post({ post, lastUpdate, preview }: PostProps) {
   function formatDate(date) {
     const formattedDate = format(new Date(date), 'dd MMM uuuu', {
       locale: ptBR,
@@ -110,6 +111,7 @@ export default function Post({ post, lastUpdate }: PostProps) {
           </article>
         ))}
         <Comments />
+        {preview && <PreviewButton />}
       </main>
     </>
   )
@@ -134,10 +136,16 @@ export const getStaticPaths: GetStaticPaths = async () => {
   }
 }
 
-export const getStaticProps: GetStaticProps = async context => {
-  const { slug } = context.params
+export const getStaticProps: GetStaticProps = async ({
+  preview = false,
+  previewData,
+  params,
+}) => {
+  const { slug } = params
   const prismic = getPrismicClient()
-  const response = await prismic.getByUID('posts', String(slug), {})
+  const response = await prismic.getByUID('posts', String(slug), {
+    ref: previewData?.ref ?? null,
+  })
 
   const post = {
     uid: response.uid,
@@ -162,6 +170,7 @@ export const getStaticProps: GetStaticProps = async context => {
     props: {
       post,
       lastUpdate,
+      preview,
     },
     revalidate: 60 * 60, // 1 hour
   }
