@@ -8,6 +8,7 @@ Esse blog foi um desafio da trilha de React do treinamento Ignite da Rocketseat 
 * Next.js
 * Typescript
 * PrismicCMS
+* Utterances
 * SASS
 * Date-fns
 * React-icons
